@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>1A7AB6FC-C10B-44D6-A937-74B002F799FE</string>
+	<key>IDESourceControlProjectName</key>
+	<string>RexTile</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D5F7DCF5-EF24-41E9-850F-39CE40A52F3A</key>
+		<string>https://192.168.1.227/svn/Rextile</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>trunk/SourceCode/iPhone/RexTile/RexTile.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D5F7DCF5-EF24-41E9-850F-39CE40A52F3A</key>
+		<string>../../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>D5F7DCF5-EF24-41E9-850F-39CE40A52F3A</key>
+		<string>https://192.168.1.227/svn/Rextile</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://192.168.1.227/svn/Rextile/trunk/SourceCode/iPhone/RexTile/RexTile.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D5F7DCF5-EF24-41E9-850F-39CE40A52F3A</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D5F7DCF5-EF24-41E9-850F-39CE40A52F3A</string>
+			<key>IDESourceControlWCCName</key>
+			<string>REXTILE</string>
+		</dict>
+	</array>
+</dict>
+</plist>

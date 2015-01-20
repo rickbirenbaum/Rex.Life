@@ -1,0 +1,33 @@
+//
+//  RexTile.pch
+//  RexTile
+//
+//  Created by Sweety Singh on 12/23/14.
+//  Copyright (c) 2014 Perennial. All rights reserved.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_5_0
+#warning "This project uses features only available in iOS SDK 5.0 and later."
+#endif
+
+#ifdef __OBJC__
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+
+// Constants
+#import "Constants.h"
+#import "MBProgressHUD.h"
+
+// User settings
+#import "UserModel.h"
+
+// Categories
+
+#import "NSObject+NullChecker.h"
+
+
+#endif
