@@ -1,40 +1,28 @@
 <?php
 class syncfriends_model extends CI_Model {
-    public function doSync( $session_id, $contacts ) {
+    public function __construct() {
+        parent::__construct();
+        $this->load->database();        
+    }
+    public function doSync( $user_id, $session_id, $contacts ) {
        
        $arrayFriends = array();
        $arrayUsers = array();
-       $userId = NULL;
-       if(!$session_id){ 
-           json_encode('Error: Please SignUp/SignIn');
-           echo 'Error: Please SignUp/SignIn';
-       }
+       $listOfFriendUsers = $this->getListOfFriendUsers($contacts);
        
-       //$contacts = array('01234567890','01234567891','01234567892','01234567893','01234567894','01234567895');
-       $result = $this->db->query("SELECT * FROM (`users`) WHERE `phone` IN (".implode(',',$contacts).")")->result();
-       if( $result ) {
-           foreach($result as $rowContact) {
+       if( $listOfFriendUsers ) {
+           foreach($listOfFriendUsers as $rowContact) {
                $arrayUsers[] = $rowContact->id;
             }
-          
-            $resultMyUser = $this->db->query("SELECT * FROM (`users`) WHERE `session_id` ='".$session_id."'")->result();
-            if( $resultMyUser ) {
-                foreach( $resultMyUser as $rowContact) {
-                    $userId = $rowContact->id;
-                }             
-            } else {
-                 json_encode('Error: Please SignUp/SignIn');
-                 echo 'Error: Please SignUp/SignIn';
-                 exit;
-            }
-                        
+                                  
             $arrayFriendsToRemove = array();
-            $resultFriends = $this->db->query("SELECT friends.friend_user_id FROM `friends` WHERE friend_user_id NOT IN(".implode(',',$arrayUsers).") AND friends.`user_id` =".$userId)->result();
+            
+            $resultFriends = $this->db->query("SELECT friends.friend_user_id FROM `friends` WHERE friend_user_id NOT IN(".implode(',',$arrayUsers).") AND friends.`user_id` =".$user_id)->result();
             foreach($resultFriends as $row){               
                  $arrayFriendsToRemove[] = $row->friend_user_id;
             }
 
-            $resultMyFriends = $this->db->query("SELECT friends.friend_user_id FROM `friends` WHERE friends.`user_id` =".$userId)->result();
+            $resultMyFriends = $this->db->query("SELECT friends.friend_user_id FROM `friends` WHERE friends.`user_id` =".$user_id)->result();
             if($resultMyFriends) {
                 foreach($resultMyFriends as $row){               
                     $arrayFriends[] = $row->friend_user_id;
@@ -46,23 +34,64 @@ class syncfriends_model extends CI_Model {
                 $arrayFriendsToAdd = $arrayUsers;
             }
             foreach($arrayFriendsToAdd as $friendToAdd ) {
-               $query = "INSERT INTO friends(user_id,friend_user_id) VALUES (" . $this->db->escape($userId) . "," . $this->db->escape($friendToAdd) . ")";
+               $query = "INSERT INTO friends(user_id,friend_user_id) VALUES (" . $this->db->escape($user_id) . "," . $this->db->escape($friendToAdd) . ")";
                $isSaved = $this->db->query($query);                 
               // echo "One friend synced successfully.\n";
             }
             foreach($arrayFriendsToRemove as $friendToRemove ) {
-                 $query = "DELETE FROM friends WHERE user_id =". $userId ." AND  friend_user_id=". $friendToRemove;
+                 $query = "DELETE FROM friends WHERE user_id =". $user_id ." AND  friend_user_id=". $friendToRemove;
                  $isSaved = $this->db->query($query);
                 // echo "One friend removed successfully.\n";
             }
-             json_encode(count($arrayFriendsToAdd) . " Users synced successfully, and " . count($arrayFriendsToRemove) ." users removed successfully." );
-             echo count($arrayFriendsToAdd) . " Users synced successfully, and " . count($arrayFriendsToRemove) ." users removed successfully." ;
+             $response["status"] = "Success";
+             $response["data"] = array("session_id"=>$session_id,"user_id"=>$user_id,
+                                        "count_add"=>count($arrayFriendsToAdd),
+                                        "count_removed"=>count($arrayFriendsToRemove));
+             
+             return json_encode($response);
                     
          } else {
-             json_encode('Error: No records to sync');
-             echo 'Error: No records to sync';
-             exit;
+            $response["status"] = "Success";
+            $response["error"] = array("errcode"=>"104", "errormsg"=>" No records to sync");
+            return json_encode($response);             
          }
-    }     
+    }
+    
+     public function highlightFriends( $user_id, $session_id,$contacts ){
+               
+        $response = $listOfFriendUsers = $this->getListOfFriendUsers( $contacts, $is_highlight = true );
+               
+        return $response;
+    }
+    
+    public function getListOfFriendUsers( $contacts, $is_highlight = false ) {
+       $contact1 = array();
+       foreach( $contacts as $contact ) {
+            $contact1[] = preg_replace('/[^0-9]/', '', $contact);           
+       }
+       $contact1 = array_filter($contact1);
+       
+       //$contacts = array('01234567890','01234567891','01234567892','01234567893','01234567894','01234567895');
+       $result = $this->db->query("SELECT id,phone FROM (`users`) WHERE `phone` IN (".implode(',',$contact1).")")->result();
+      
+       if( true == $is_highlight ) {
+           // get call for highlight API
+           $response["status"] = "Success";
+           if(!empty($result)) {
+                $response["data"] = $result;
+                
+           } else {
+               $response["data"] = NULL;
+           } 
+           $response = json_encode($response);
+           
+           print_r($response);
+           return true;
+           
+       } else { // simple get call
+        return $result;
+       }      
+    }
+    
   }
 ?>

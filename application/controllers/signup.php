@@ -1,7 +1,8 @@
 <?php
-class Signup extends CI_Controller {
+class signup extends CI_Controller {
     public function __construct() {
-        parent::__construct();
+        
+        parent::__construct();         
         
         session_start();
         session_regenerate_id();
@@ -11,9 +12,10 @@ class Signup extends CI_Controller {
     public function register(){        
         
         $phone= $this->input->post('phone'); 
+        
         if(!$phone || 0 == $phone ) {
             $response["status"] = "Failure";
-            $response["error"] = array("errcode"=>"101", "errormsg"=>"Please provide valid phone number");
+            $response["error"] = array("errcode"=>"112", "errormsg"=>"Please provide valid phone number");
             $response =  json_encode($response);
 print_r($response);
             return $response;
@@ -21,7 +23,7 @@ print_r($response);
         $strLoginType = ''; 
         $this->load->model("signup_model");
         $this->data =  $this->signup_model->getSignUpDetails($phone);
-       
+      
         if($this->data){                  
             // do login by and set session
             $_SESSION['user_id'] = $this->data["user_id"];
@@ -31,8 +33,7 @@ print_r($response);
             $save =  $this->signin_model->signIn( $phone, session_id() ); 
             if( $save ){
                 $strLoginType = 'sign in';                
-                $result = $this->sendSms( $phone, $strLoginType );
-                json_encode($result);
+                $result = $this->sendSms( $phone, $strLoginType );               
  print_r($result);
                 return $result;
             }
@@ -110,14 +111,30 @@ print_r($response);
     }
     
     public function sync() {
-        $session_id= $this->input->post( 'session_id' );         
+        $session_id= $this->input->post( 'session_id' );
+        $user_id= $this->input->post( 'user_id' ); 
+         
+        // check for the session
+        $this->load->model('recommendation_model');
+        $verifiedSession = $this->recommendation_model->getUserId( $session_id, $user_id );
+       
+        if(!$verifiedSession) {
+            return false;
+        }
         $contacts = explode( ',', $this->input->post( 'contacts' ) );
         if( !is_array($contacts ) ) {
-            json_encode( 'Error: There are no contact records to sync' );            
+            $response["status"] = "Failure";
+            $response["error"] = array("errcode"=>"101", "errormsg"=>"No contact to sync");
+            
+            $response = json_encode($response);
+            print_r( $response );                
+            
             exit;
         }
         $this->load->model( "syncfriends_model" );
-        $this->data =  $this->syncfriends_model->doSync( $session_id,$contacts );
+        $response =  $this->syncfriends_model->doSync( $user_id, $session_id,$contacts );
+print_r($response);
+        return $response;
     }
     
     public function randomString() {
